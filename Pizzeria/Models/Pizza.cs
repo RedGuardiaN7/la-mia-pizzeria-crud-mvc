@@ -19,7 +19,8 @@ namespace Pizzeria.Models
         [Url(ErrorMessage = "L'url inserito è invalido!")]
         public string Image { get; set; }
 
-
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
 
         public Pizza()
         {

@@ -7,10 +7,11 @@ namespace Pizzeria.Database
     public class PizzaContext : DbContext
     {
         public DbSet<Pizza> Pizzas { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=localhost;Database=PizzariaDB;" +
+            optionsBuilder.UseSqlServer("Data Source=localhost;Database=PizzeriaDB;" +
             "Integrated Security=True;TrustServerCertificate=True");
         }
     }
