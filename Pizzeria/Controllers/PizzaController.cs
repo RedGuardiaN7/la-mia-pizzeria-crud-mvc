@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.SqlServer.Server;
 using Pizzeria.Database;
 using Pizzeria.Models;
@@ -20,8 +22,10 @@ namespace Pizzeria.Controllers
         {
             using (PizzaContext db = new PizzaContext())
             {
+                // LINQ: syntax methos
                 Pizza FoundPizza = db.Pizzas
                     .Where(DbPizza => DbPizza.Id == id)
+                    .Include(pizza => pizza.Category)
                     .FirstOrDefault();
 
                 if (FoundPizza != null)

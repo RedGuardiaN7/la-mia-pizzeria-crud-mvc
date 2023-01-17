@@ -14,6 +14,13 @@
         @Model.Description
     </p>
     <p>
+        <strong>Tipologia:</strong>
+        @if(Model.Category.Title != null)
+        {
+            @Model.Category.Title
+        }
+    </p>
+    <p>
         <strong>Prezzo:</strong>
         7,00€
     </p>
