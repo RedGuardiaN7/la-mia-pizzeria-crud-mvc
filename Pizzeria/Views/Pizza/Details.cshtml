@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Dettagli pizza";
+    @model Pizza;
+}
+
+<h1 class="display-3 text-center mt-3 mb-4">Dettagli pizza: @Model.Name</h1>
+
+<div class ="container text-center fs-5">
+
+    <img class="mb-5" src="@Model.Image">
+    <p>
+        <strong>Ingredienti:</strong>
+        @Model.Description
+    </p>
+    <p>
+        <strong>Prezzo:</strong>
+        7,00€
+    </p>
+
+</div>
+
