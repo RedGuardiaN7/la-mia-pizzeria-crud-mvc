@@ -30,6 +30,11 @@
             <span asp-validation-for="Pizza.CategoryId" class="text-danger"></span>
         </div>
         <div class="mb-3">
+            <label>Ingredienti:</label>
+            <select asp-for="IngredientsSelectedFromMultipleSelect" asp-items="@Model.Ingredients" multiple size="10" class="form-control mb-2 mr-sm-2 ml-sm-3 leftList">
+            </select>
+        </div>
+        <div class="mb-3">
             <label>Url Immagine:</label>
             <input asp-for="Pizza.Image" type="text" class="form-control" placeholder="@Model.Pizza.Image"/>
             <span asp-validation-for="Pizza.Image" class="text-danger"></span>

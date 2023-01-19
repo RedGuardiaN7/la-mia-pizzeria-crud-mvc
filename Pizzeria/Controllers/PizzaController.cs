@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.SqlServer.Server;
 using Pizzeria.Database;
 using Pizzeria.Models;
+using Pizzeria.Utils;
 
 namespace Pizzeria.Controllers
 {
@@ -26,6 +28,7 @@ namespace Pizzeria.Controllers
                 Pizza FoundPizza = db.Pizzas
                     .Where(DbPizza => DbPizza.Id == id)
                     .Include(pizza => pizza.Category)
+                    .Include(pizza => pizza.Ingredients)
                     .FirstOrDefault();
 
                 if (FoundPizza != null)
@@ -48,6 +51,7 @@ namespace Pizzeria.Controllers
                 modelForView.Pizza = new Pizza();
 
                 modelForView.Categories = categoriesFromDb;
+                modelForView.Ingredients = IngrediensConverter.getIngredientsForMultipleSelect();
 
                 return View("Create", modelForView);
             }
@@ -61,6 +65,7 @@ namespace Pizzeria.Controllers
             {
                 Pizza PizzaToEdit = db.Pizzas
                     .Where(DbPizza => DbPizza.Id == id)
+                    .Include(pizza => pizza.Ingredients)
                     .FirstOrDefault();
 
                 if (PizzaToEdit == null)
@@ -74,6 +79,21 @@ namespace Pizzeria.Controllers
                 PizzaCategoriesView modelForView = new PizzaCategoriesView();
                 modelForView.Pizza = PizzaToEdit;
                 modelForView.Categories = categories;
+                
+                List<Ingredient> DbIngredientList = db.Ingredients.ToList<Ingredient>();
+
+                List<SelectListItem> OptionsForSelect = new List<SelectListItem>();
+
+                foreach (Ingredient ingredient in DbIngredientList)
+                {
+                    bool ItWasSelected = PizzaToEdit.Ingredients.Any(SelectedIngredients => SelectedIngredients.Id == ingredient.Id);
+
+                    SelectListItem optionSingleSelect = new SelectListItem() { Text = ingredient.Name, Value = ingredient.Id.ToString(), Selected = ItWasSelected };
+                    OptionsForSelect.Add(optionSingleSelect);
+                }
+
+                modelForView.Ingredients = OptionsForSelect;
+
                 return View("Edit", modelForView);
             }
         }
@@ -83,22 +103,19 @@ namespace Pizzeria.Controllers
         {
             using (PizzaContext db = new PizzaContext())
             {
+                // LINQ: syntax methos
                 Pizza PizzaToDelete = db.Pizzas
                     .Where(DbPizza => DbPizza.Id == id)
+                    .Include(pizza => pizza.Category)
+                    .Include(pizza => pizza.Ingredients)
                     .FirstOrDefault();
 
-                if (PizzaToDelete == null)
+                if (PizzaToDelete != null)
                 {
-                    return NotFound("La pizza che cerchi di eliminare non esiste!");
+                    return View(PizzaToDelete);
                 }
 
-                List<Category> categories = db.Categories.ToList<Category>();
-
-                PizzaCategoriesView modelForView = new PizzaCategoriesView();
-                modelForView.Pizza = PizzaToDelete;
-                modelForView.Categories = categories;
-                return View("Delete", modelForView);
-
+                return NotFound("La pizza che stai cercando non esiste!");
             }
         }
 
@@ -113,12 +130,27 @@ namespace Pizzeria.Controllers
                     List<Category> categories = db.Categories.ToList<Category>();
 
                     formData.Categories = categories;
+
+                    formData.Ingredients = IngrediensConverter.getIngredientsForMultipleSelect();
                 }
                 return View("Create", formData);
             }
 
             using(PizzaContext db = new PizzaContext())
             {
+                if(formData.IngredientsSelectedFromMultipleSelect != null)
+                {
+                    formData.Pizza.Ingredients = new List<Ingredient>();
+
+                    foreach (string IngredientId in formData.IngredientsSelectedFromMultipleSelect)
+                    {
+                        int IngredientIdSelected = int.Parse(IngredientId);
+                        Ingredient ingredient = db.Ingredients.Where(DbIngredient => DbIngredient.Id == IngredientIdSelected).FirstOrDefault();
+
+                        formData.Pizza.Ingredients.Add(ingredient);
+                    }
+                }
+
                 db.Pizzas.Add(formData.Pizza);
                 db.SaveChanges();
             }
@@ -146,22 +178,38 @@ namespace Pizzeria.Controllers
             {
                 Pizza PizzaToEdit = db.Pizzas
                     .Where(DbPizza => DbPizza.Id == id)
+                    .Include(pizza => pizza.Ingredients)
                     .FirstOrDefault();
                 if (PizzaToEdit != null)
                 {
                     PizzaToEdit.Name = formData.Pizza.Name;
                     PizzaToEdit.Description = formData.Pizza.Description;
+                    PizzaToEdit.Price = formData.Pizza.Price;
                     PizzaToEdit.Image = formData.Pizza.Image;
                     PizzaToEdit.CategoryId = formData.Pizza.CategoryId;
+
+                    PizzaToEdit.Ingredients.Clear();
+
+                    if (formData.IngredientsSelectedFromMultipleSelect != null)
+                    {
+                        foreach (string IngredientId in formData.IngredientsSelectedFromMultipleSelect)
+                        {
+                            int IngredientIdSelected = int.Parse(IngredientId);
+                            Ingredient ingredient = db.Ingredients.Where(DbIngredient => DbIngredient.Id == IngredientIdSelected).FirstOrDefault();
+
+                            PizzaToEdit.Ingredients.Add(ingredient);
+                        }
+
+                    }
                     
                     db.SaveChanges();
+
+                    return RedirectToAction("Index");
                 }
                 else
                 {
                     return NotFound("La pizza che volevi modificare non esiste!");
                 }
-
-                return RedirectToAction("Index");
                 
             }
         }

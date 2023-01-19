@@ -21,6 +21,14 @@
         }
     </p>
     <p>
+                <strong>Ingredienti:</strong>
+                @foreach(Ingredient ingredient in Model.Ingredients){
+                    <div>
+                        <label>@ingredient.Name</label>
+                    </div>
+                }
+    </p>
+    <p>
         <strong>Prezzo:</strong>
         @Model.Price€
     </p>
