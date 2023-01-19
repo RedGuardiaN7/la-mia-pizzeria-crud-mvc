@@ -11,8 +11,8 @@ using Pizzeria.Database;
 namespace Pizzeria.Migrations
 {
     [DbContext(typeof(PizzaContext))]
-    [Migration("20230110145028_Migration1")]
-    partial class Migration1
+    [Migration("20230118153446_Pizzeria")]
+    partial class Pizzeria
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace Pizzeria.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Pizzeria.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("Pizzeria.Models.Pizza", b =>
                 {
                     b.Property<int>("Id")
@@ -32,8 +49,12 @@ namespace Pizzeria.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(300)
                         .HasColumnType("text");
 
                     b.Property<string>("Image")
@@ -42,11 +63,33 @@ namespace Pizzeria.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("varchar(150)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Pizzas");
+                });
+
+            modelBuilder.Entity("Pizzeria.Models.Pizza", b =>
+                {
+                    b.HasOne("Pizzeria.Models.Category", "Category")
+                        .WithMany("Pizzas")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Pizzeria.Models.Category", b =>
+                {
+                    b.Navigation("Pizzas");
                 });
 #pragma warning restore 612, 618
         }

@@ -33,6 +33,12 @@
             <input asp-for="Pizza.Image" type="text" class="form-control"/>
             <span asp-validation-for="Pizza.Image" class="text-danger"></span>
         </div>
+        <div class="mb-3">
+            <label>Price (€):</label>
+            <input asp-for="Pizza.Price" type="text" class="form-control" />
+            <span asp-validation-for="Pizza.Price" class="text-danger"></span>
+        </div>
+ 
         <button type="submit" class="btn btn-primary">Salva</button>
     </form>
 </div>

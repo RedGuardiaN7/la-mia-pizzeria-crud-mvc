@@ -11,8 +11,8 @@ using Pizzeria.Database;
 namespace Pizzeria.Migrations
 {
     [DbContext(typeof(PizzaContext))]
-    [Migration("20230117124826_CategoryMigration")]
-    partial class CategoryMigration
+    [Migration("20230118153158_PizzaMigration")]
+    partial class PizzaMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,6 +65,9 @@ namespace Pizzeria.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(150)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

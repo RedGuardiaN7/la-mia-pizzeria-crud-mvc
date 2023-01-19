@@ -19,6 +19,11 @@ namespace Pizzeria.Models
         [Url(ErrorMessage = "L'url inserito è invalido!")]
         public string Image { get; set; }
 
+        [Column(TypeName = "float")]
+        [Required(ErrorMessage = "Il prezzo della pizza è obbligatorio")]
+        [Range(0, 10000, ErrorMessage = "Il prezzo deve essere superiore a 0!")]
+        public float Price { get; set; }
+
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
 

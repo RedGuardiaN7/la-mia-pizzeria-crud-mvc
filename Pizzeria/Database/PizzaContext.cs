@@ -11,7 +11,7 @@ namespace Pizzeria.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=localhost;Database=PizzeriaDB;" +
+            optionsBuilder.UseSqlServer("Data Source=localhost;Database=PizzeriaV2;" +
             "Integrated Security=True;TrustServerCertificate=True");
         }
     }
